@@ -1,4 +1,4 @@
-# First steps
+# AWS infrastructure
 clone the repo
 ```
 git clone https://spring.paloaltonetworks.com/rweglarz/cnv3
@@ -14,7 +14,7 @@ download lambda function
 curl -L -k https://github.com/aws-samples/eks-install-guide-for-multus/raw/main/cfn/templates/nodegroup/lambda_function.zip -O
 ```
 
-create your value file: eks.tfvars, replace user with your user
+create your value file: eks.tfvars, replace user with your user. Also if needed create/add your own **safe_ips**
 ```
 cluster_name = "user-cn3" 
 vpc_name  = "user-cn3-n1"
