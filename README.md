@@ -29,6 +29,18 @@ plan and apply
 terraform plan --var-file=../eks.tfvars
 terraform apply
 ```
+Note that the kubeconfig file above is not the default, make sure that from now on that's the cluster you will use. For example export KUBECONFIG variable
+
+# setup multus and scale the cluster
+download and apply multus
+```
+curl -L -k kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/master/config/multus/v3.7.2-eksbuild.1/aws-k8s-multus.yaml -O
+kubectl apply -f aws-k8s-multus.yaml
+```
+Autoscaling group will have 0 nodes now. Scale it up. Adjust the region and name as needed
+```
+aws autoscaling set-desired-capacity --region eu-central-1 --auto-scaling-group-name rwe-cnv3-ng1 --desired-capacity 2
+```
 
 # Helm
 go to the main folder when you cloned the repo
