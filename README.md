@@ -96,3 +96,15 @@ install replace **mycn** with something else if you so desire
 ```
 helm install mycn cnv3 --values eks-h.yaml 
 ```
+
+# cnv3
+with the release c367 there is a bug which results in failed panorama pushed commit. To workaround it exec into both mps
+```
+kubectl exec -it cnv3fw1-sts-0-0 -- bash
+kubectl exec -it cnv3fw1-sts-1-0 -- bash
+```
+and run
+```
+telemcfg_gen
+```
+repush
