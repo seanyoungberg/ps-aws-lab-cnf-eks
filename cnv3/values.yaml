@@ -1,0 +1,27 @@
+---
+common:
+  cr: "gcr.io/gcp-gcs-tse/cn-series"
+  versionPanos: "10.2.0"
+  versionInit: "3.0.0"
+  versionCni: "3.0.0"
+  deploySharedResources: true
+  ha: true
+  pullSecretName: ""
+
+panorama:
+  authKey: ""
+  ip: ""
+  dg: ""
+  ts: ""
+
+mp:
+  repo: panos_cn_mgmt
+  repoInit: pan_cn_mgmt_init
+  storageClassName: gp2
+dp:
+  dpdk: false
+  memory: "4Gi"
+  cpu: "1"
+  repo: panos_cn_ngfw
+cni:
+  repo: pan_cni
