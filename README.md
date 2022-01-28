@@ -24,8 +24,9 @@ key_pair = "user"
 owner = "user"
 ```
 
-plan and apply
+init, plan and apply
 ```
+terraform init
 terraform plan --var-file=../eks.tfvars
 terraform apply
 ```
