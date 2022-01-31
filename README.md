@@ -65,7 +65,7 @@ create the helm values file: eks-h.yaml, something like:
 ---
 common:
   cr: "gcr.io/gcp-gcs-tse/cn-series"
-  versionPanos: "10.2.0-c367"
+  versionPanos: "10.2.0-c395"
   versionInit: "3.0.0-b3"
   versionCni: "3.0.0d_10_a26df862ed"
   pullSecretName: gcr-json-key
@@ -83,8 +83,8 @@ dp:
   - name: ha2
     pciBusID: "0000:00:06.0"
     ip:
-      fw0: "172.18.3.101/32"
-      fw1: "172.18.3.102/32"
+      fw0: "172.16.3.101/32"
+      fw1: "172.16.3.102/32"
   - name: net1
     pciBusID: "0000:00:07.0"
   - name: net2
@@ -156,6 +156,7 @@ aws  ec2 create-route   --region eu-central-1 --destination-cidr-block 172.17.5.
 
 # extras
 ## bug in 10.2.0-c367
+\! NOTE: this should not be needed, as of panos c395
 in the panos 10.2.0-c367 there is a [bug PAN-187106](https://jira-hq.paloaltonetworks.local/browse/PAN-187106) which results in failed panorama pushed commit. To workaround it exec into both mps
 ```
 kubectl exec -it cnv3fw1-sts-0-0 -- bash
