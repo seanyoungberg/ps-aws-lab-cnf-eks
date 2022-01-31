@@ -16,7 +16,7 @@ curl -L -k https://github.com/aws-samples/eks-install-guide-for-multus/raw/main/
 
 create your value file: ../eks.tfvars, replace user with your user. Also if needed create/add your own **safe_ips**
 ```
-cluster_name = "user-cn3" 
+cluster_name = "user-cn3"
 vpc_name  = "user-cn3-n1"
 kubeconfig_output_path = "/Users/user/.kube/config-eks"
 region = "eu-central-1"
@@ -93,7 +93,7 @@ kubectl apply -f cnv3/crds/pan-cn-mgmt-slot-crd.yaml
 kubectl apply -f cnv3/crds/plugin-serviceaccount.yaml
 ```
 
-create pull secret for gcr registry, you need the sa json file file 
+create pull secret for gcr registry, you need the sa json file file
 ```
 kubectl -n kube-system create secret docker-registry gcr-json-key \
                 --docker-server=gcr.io \
@@ -104,7 +104,7 @@ kubectl -n kube-system create secret docker-registry gcr-json-key \
 
 install replace **mycn** with something else if you so desire
 ```
-helm install mycn cnv3 --values eks-h.yaml 
+helm install mycn cnv3 --values eks-h.yaml
 ```
 
 # cnv3
