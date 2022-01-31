@@ -1,3 +1,6 @@
+# Intro
+The lab demo is meant to show / help with sample setup, not necessarily the most correct one when it comes to the way BGP is configured or routes are propagated
+
 # AWS infrastructure
 clone the repo
 ```
@@ -109,7 +112,7 @@ helm install mycn cnv3 --values eks-h.yaml
 ```
 
 # extras
-## cbug in 10.2.0-c367
+## bug in 10.2.0-c367
 in the panos 10.2.0-c367 there is a [bug PAN-187106](https://jira-hq.paloaltonetworks.local/browse/PAN-187106) which results in failed panorama pushed commit. To workaround it exec into both mps
 ```
 kubectl exec -it cnv3fw1-sts-0-0 -- bash
