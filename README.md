@@ -41,6 +41,7 @@ ssh to jump host and move the files to nginx web folder
 ```
 ssh aws-cnv3-jump -c sudo mv igb_uio.ko rte_kni.ko /var/www/html/
 ```
+\! Note that these modules are specific to the ami used for the nodes, hence if you use a different ami you will most likely need to recompile the modules
 
 # setup multus and scale the cluster
 download and apply multus
@@ -107,8 +108,9 @@ install replace **mycn** with something else if you so desire
 helm install mycn cnv3 --values eks-h.yaml
 ```
 
-# cnv3
-with the release c367 there is a bug which results in failed panorama pushed commit. To workaround it exec into both mps
+# extras
+## cbug in 10.2.0-c367
+in the panos 10.2.0-c367 there is a [bug PAN-187106](https://jira-hq.paloaltonetworks.local/browse/PAN-187106) which results in failed panorama pushed commit. To workaround it exec into both mps
 ```
 kubectl exec -it cnv3fw1-sts-0-0 -- bash
 kubectl exec -it cnv3fw1-sts-1-0 -- bash
