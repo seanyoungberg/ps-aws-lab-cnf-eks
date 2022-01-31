@@ -111,6 +111,49 @@ install replace **mycn** with something else if you so desire
 helm install mycn cnv3 --values eks-h.yaml
 ```
 
+# secondary IPs and routes
+you can create an alias or a convenient function in your shell environment like so:
+```
+function awsinstancebyip  { aws ec2 describe-instances --region eu-central-1 --filter Name=private-ip-address,Values=$1 | jq '.Reservations[0].Instances[0] | {"id":.InstanceId, "ni": .NetworkInterfaces | [.[] | {"di":.Attachment.DeviceIndex,"ip":.PrivateIpAddress,"eni":.NetworkInterfaceId} ] | sort_by(.di)}'; }
+```
+Find the K8S hosting the DP pods
+
+## secondary IPs for HA
+IP addresses on the ha2 link 172.16.3.101 and 172.16.3.102 are assigned to K8S nodes hosting the dp-0 and dp-1 accordingly (in this .172 and .247)
+```
+aws ec2 assign-private-ip-addresses --region eu-central-1 --allow-reassignment \
+    --private-ip-addresses 172.16.3.101 \
+    --network-interface-id $(awsinstbyip 172.16.1.172 | jq -r '.ni[1].eni')
+
+aws ec2 assign-private-ip-addresses --region eu-central-1  --allow-reassignment \
+    --private-ip-addresses 172.16.3.102 \
+    --network-interface-id $(awsinstbyip 172.16.1.247 | jq -r '.ni[1].eni')
+```
+
+## secondary IPs for traffic
+Find the K8S node hosting the active DP pod, we will put it into *nip* variable to avoid putting it into too many places
+```
+nip=172.16.1.247
+aws ec2 assign-private-ip-addresses --region eu-central-1  --allow-reassignment \
+    --private-ip-addresses 172.16.4.199 \
+    --network-interface-id $(awsinstbyip $nip | jq -r '.ni[2].eni')
+aws ec2 assign-private-ip-addresses --region eu-central-1  --allow-reassignment \
+    --private-ip-addresses 172.16.5.199 \
+    --network-interface-id $(awsinstbyip $nip | jq -r '.ni[3].eni')
+```
+
+## routes for traffic
+Find the routing table associated with the multus subnets and add the routes. Note we're using *nip* variable from the previous step
+```
+rt=rtb-0cd9f78f4a1a0b02b
+aws  ec2 create-route   --region eu-central-1 --destination-cidr-block 172.17.4.0/24 \
+    --route-table-id $rt \
+    --network-interface-id $(awsinstbyip $nip | jq -r '.ni[3].eni')
+aws  ec2 create-route   --region eu-central-1 --destination-cidr-block 172.17.5.0/24 \
+    --route-table-id $rt \
+    --network-interface-id $(awsinstbyip $nip | jq -r '.ni[2].eni')
+```
+
 # extras
 ## bug in 10.2.0-c367
 in the panos 10.2.0-c367 there is a [bug PAN-187106](https://jira-hq.paloaltonetworks.local/browse/PAN-187106) which results in failed panorama pushed commit. To workaround it exec into both mps
