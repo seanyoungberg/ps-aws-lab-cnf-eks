@@ -79,7 +79,7 @@ module "vpc" {
 resource "aws_subnet" "multus-ha" {
   vpc_id     = module.vpc.vpc_id
   cidr_block = "172.16.3.0/24"
-  availability_zone = var.availability_zones[0]
+  availability_zone = data.aws_availability_zones.azs.names[0]
   tags = {
     Name = "${var.vpc_name}-multus-ha"
   }
@@ -87,7 +87,7 @@ resource "aws_subnet" "multus-ha" {
 resource "aws_subnet" "multus-1" {
   vpc_id     = module.vpc.vpc_id
   cidr_block = "172.16.4.0/24"
-  availability_zone = var.availability_zones[0]
+  availability_zone = data.aws_availability_zones.azs.names[0]
   tags = {
     Name = "${var.vpc_name}-multus-1"
   }
@@ -95,7 +95,7 @@ resource "aws_subnet" "multus-1" {
 resource "aws_subnet" "multus-2" {
   vpc_id     = module.vpc.vpc_id
   cidr_block = "172.16.5.0/24"
-  availability_zone = var.availability_zones[0]
+  availability_zone = data.aws_availability_zones.azs.names[0]
   tags = {
     Name = "${var.vpc_name}-multus-2"
   }
@@ -515,7 +515,7 @@ data "template_cloudinit_config" "m1_ci" {
           content: |
             router id 172.16.4.200;
 
-            log "/tmp/bird.log" all;
+            log "/var/log/bird/bird.log" all;
             debug protocols {events,states};
 
             protocol device {
@@ -556,6 +556,15 @@ data "template_cloudinit_config" "m1_ci" {
               graceful restart on;
               neighbor 172.17.5.200 as 65432;
             }
+        - path: /var/lib/cloud/scripts/per-once/bird.sh
+          content: |
+            #!/bin/bash
+            set -o xtrace
+            mkdir /var/log/bird
+            touch /var/log/bird/bird.log
+            chown -R bird:bird /var/log/bird
+            systemctl restart bird
+          permissions: '0744'
       runcmd:
         - netplan apply
       packages:
@@ -616,7 +625,7 @@ data "template_cloudinit_config" "m2_ci" {
           content: |
             router id 172.16.5.200;
 
-            log "/tmp/bird.log" all;
+            log "/var/log/bird/bird.log" all;
             debug protocols {events,states};
 
             protocol device {
@@ -657,7 +666,15 @@ data "template_cloudinit_config" "m2_ci" {
               graceful restart on;
               neighbor 172.17.4.200 as 65432;
             }
-
+        - path: /var/lib/cloud/scripts/per-once/bird.sh
+          content: |
+            #!/bin/bash
+            set -o xtrace
+            mkdir /var/log/bird
+            touch /var/log/bird/bird.log
+            chown -R bird:bird /var/log/bird
+            systemctl restart bird
+          permissions: '0744'
       runcmd:
         - netplan apply
       packages:

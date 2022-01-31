@@ -17,10 +17,6 @@ variable "region" {
   default = "eu-central-1"
   type = string
 }
-variable "availability_zones" {
-  default = ["eu-west-1a", "eu-west-1b"]
-  type = list
-}
 
 variable "safe_ips" {
   default = [
