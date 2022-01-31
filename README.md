@@ -33,7 +33,7 @@ terraform init
 terraform plan --var-file=../eks.tfvars
 terraform apply
 ```
-Note that the kubeconfig file above is not the default, make sure that from now on that's the cluster you will use. For example export KUBECONFIG variable
+\! NOTE: the kubeconfig file above is not the default, make sure that from now on that's the cluster you will use. For example export KUBECONFIG variable
 
 # jump host preparation
 copy the the kernel module binaries to jump host, replace the name accordingly
@@ -44,7 +44,7 @@ ssh to jump host and move the files to nginx web folder
 ```
 ssh aws-cnv3-jump -c sudo mv igb_uio.ko rte_kni.ko /var/www/html/
 ```
-\! Note that these modules are specific to the ami used for the nodes, hence if you use a different ami you will most likely need to recompile the modules
+\! NOTE: that these modules are specific to the ami used for the nodes, hence if you use a different ami you will most likely need to recompile the modules
 
 # setup multus and scale the cluster
 download and apply multus
@@ -166,3 +166,4 @@ and run
 telemcfg_gen
 ```
 repush
+
