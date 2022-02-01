@@ -57,6 +57,9 @@ Autoscaling group will have 0 nodes now. Scale it up. Adjust the region and name
 aws autoscaling set-desired-capacity --region eu-central-1 --auto-scaling-group-name rwe-cnv3-ng1 --desired-capacity 2
 ```
 
+# panorama
+Create device group and template stack that will be referenced later on. To bring up BGP peering with multus hosts deployed by TF you will need to create a template with the necessary VR/BGP/interface configuration. The cli commands creating these are in the *panorama_bgp_template.cli* file. Reference that template in the template stack.
+
 # Helm
 go to the main folder when you cloned the repo
 
