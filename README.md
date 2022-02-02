@@ -70,7 +70,6 @@ common:
   cr: "gcr.io/gcp-gcs-tse/cn-series"
   versionPanos: "10.2.0-c395"
   versionInit: "3.0.0-b3"
-  versionCni: "3.0.0d_10_a26df862ed"
   pullSecretName: gcr-json-key
 
 panorama:
