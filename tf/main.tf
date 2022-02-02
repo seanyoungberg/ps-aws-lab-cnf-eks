@@ -542,16 +542,16 @@ data "template_cloudinit_config" "m1_ci" {
                 print "rejected:", net;
                 reject;
               };
-              local as 65432;
+              local as 65431;
               source address 172.16.4.200;
               graceful restart on;
-              neighbor 172.16.4.199 as 65432;
+              neighbor 172.16.4.199 as 65430;
             }
             protocol bgp friend {
               import filter {
                     accept;
               };
-              local as 65432;
+              local as 65431;
               source address 172.17.4.200;
               graceful restart on;
               neighbor 172.17.5.200 as 65432;
@@ -655,7 +655,7 @@ data "template_cloudinit_config" "m2_ci" {
               local as 65432;
               source address 172.16.5.200;
               graceful restart on;
-              neighbor 172.16.5.199 as 65432;
+              neighbor 172.16.5.199 as 65430;
             }
             protocol bgp friend {
               import filter {
@@ -664,7 +664,7 @@ data "template_cloudinit_config" "m2_ci" {
               local as 65432;
               source address 172.17.5.200;
               graceful restart on;
-              neighbor 172.17.4.200 as 65432;
+              neighbor 172.17.4.200 as 65431;
             }
         - path: /var/lib/cloud/scripts/per-once/bird.sh
           content: |
