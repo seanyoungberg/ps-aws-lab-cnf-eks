@@ -194,4 +194,4 @@ spec:
         secret:
           # Don't change this. Needs to match PAN_DP_NAME in pan-cn-mgmt.yaml
           # followed by suffix "-sw". Also hard-coded in ipsec.conf
-          secretName: pan-fw-1-sw
+          secretName: {{ template "mpName" . }}-1-sw

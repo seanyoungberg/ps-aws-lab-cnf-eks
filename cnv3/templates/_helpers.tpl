@@ -1,8 +1,8 @@
 {{- define "mpName" -}}
-{{ .Release.Name }}
+pan-mp-{{ .Release.Name }}
 {{- end -}}
 {{- define "dpName" -}}
-{{ $.Release.Name }}-dp
+pan-dp-{{ $.Release.Name }}
 {{- end -}}
 
 {{- define "netAttachments" -}}

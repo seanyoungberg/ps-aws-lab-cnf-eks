@@ -88,7 +88,7 @@ spec:
           - name: PAN_DP_NAME
             # Needs to match the prefix in secret volume
             # sw-secret in pan-cn-ngfw.yaml and hard-coded in ipsec.conf
-            value: pan-fw-1
+            value: {{ template "mpName" . }}-1
       containers:
         - name: pan-mgmt
           image: {{ .Values.common.cr }}/{{ .Values.mp.repo}}:{{ .Values.common.versionPanos }}
@@ -172,7 +172,7 @@ spec:
           - name: PAN_DP_NAME
             # Needs to match the prefix in secret volume
             # sw-secret in pan-cn-ngfw.yaml and hard-coded in ipsec.conf
-            value: pan-fw-1
+            value: {{ template "mpName" . }}-1
       volumes:
       - name: dshm
         emptyDir:
