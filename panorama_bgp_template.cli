@@ -1,8 +1,32 @@
-set template cnv3bgp settings default-vsys vsys1
+set template cnv3bgp config  network profiles interface-management-profile ping
+set template cnv3bgp config  network interface ethernet ethernet1/2 layer3 ndp-proxy enabled no
+set template cnv3bgp config  network interface ethernet ethernet1/2 layer3 sdwan-link-settings upstream-nat enable no
+set template cnv3bgp config  network interface ethernet ethernet1/2 layer3 sdwan-link-settings upstream-nat static-ip
+set template cnv3bgp config  network interface ethernet ethernet1/2 layer3 sdwan-link-settings enable no
+set template cnv3bgp config  network interface ethernet ethernet1/2 layer3 dhcp-client create-default-route no
+set template cnv3bgp config  network interface ethernet ethernet1/2 layer3 lldp enable no
+set template cnv3bgp config  network interface ethernet ethernet1/2 layer3 interface-management-profile ping
+set template cnv3bgp config  network interface ethernet ethernet1/3 layer3 ndp-proxy enabled no
+set template cnv3bgp config  network interface ethernet ethernet1/3 layer3 sdwan-link-settings upstream-nat enable no
+set template cnv3bgp config  network interface ethernet ethernet1/3 layer3 sdwan-link-settings upstream-nat static-ip
+set template cnv3bgp config  network interface ethernet ethernet1/3 layer3 sdwan-link-settings enable no
+set template cnv3bgp config  network interface ethernet ethernet1/3 layer3 dhcp-client create-default-route no
+set template cnv3bgp config  network interface ethernet ethernet1/3 layer3 lldp enable no
+set template cnv3bgp config  network interface ethernet ethernet1/3 layer3 interface-management-profile ping
+set template cnv3bgp config  network interface ethernet ethernet1/1 ha
+set template cnv3bgp config  network interface loopback units loopback.4 adjust-tcp-mss enable no
+set template cnv3bgp config  network interface loopback units loopback.4 ip 172.16.4.199
+set template cnv3bgp config  network interface loopback units loopback.4 interface-management-profile ping
+set template cnv3bgp config  network interface loopback units loopback.5 adjust-tcp-mss enable no
+set template cnv3bgp config  network interface loopback units loopback.5 ip 172.16.5.199
+set template cnv3bgp config  network interface loopback units loopback.5 interface-management-profile ping
+set template cnv3bgp config  vsys vsys1 import network interface [ ethernet1/2 ethernet1/3 loopback.4 loopback.5 ]
 set template cnv3bgp config  vsys vsys1 zone m1 network layer3 [ ethernet1/2 loopback.4 ]
 set template cnv3bgp config  vsys vsys1 zone m2 network layer3 [ ethernet1/3 loopback.5 ]
-set template cnv3bgp config  vsys vsys1 import network interface [ ethernet1/2 ethernet1/3 loopback.4 loopback.5 ]
+set template cnv3bgp settings default-vsys vsys1
+set template cnv3bgp config  network virtual-router vr2 protocol bgp router-id 172.16.199.199
 set template cnv3bgp config  network virtual-router vr2 ecmp algorithm ip-modulo
+set template cnv3bgp config  network virtual-router vr2 interface [ ethernet1/2 ethernet1/3 loopback.4 loopback.5 ]
 set template cnv3bgp config  network virtual-router vr2 protocol bgp routing-options graceful-restart enable yes
 set template cnv3bgp config  network virtual-router vr2 protocol bgp peer-group gg type ebgp remove-private-as yes
 set template cnv3bgp config  network virtual-router vr2 protocol bgp peer-group gg type ebgp import-nexthop original
@@ -59,7 +83,6 @@ set template cnv3bgp config  network virtual-router vr2 protocol bgp peer-group 
 set template cnv3bgp config  network virtual-router vr2 protocol bgp peer-group gg soft-reset-with-stored-info no
 set template cnv3bgp config  network virtual-router vr2 protocol bgp peer-group gg enable yes
 set template cnv3bgp config  network virtual-router vr2 protocol bgp enable yes
-set template cnv3bgp config  network virtual-router vr2 protocol bgp router-id 172.16.199.199
 set template cnv3bgp config  network virtual-router vr2 protocol bgp local-as 65430
 set template cnv3bgp config  network virtual-router vr2 protocol bgp policy import rules any action allow update community none
 set template cnv3bgp config  network virtual-router vr2 protocol bgp policy import rules any action allow update extended-community none
@@ -79,29 +102,6 @@ set template cnv3bgp config  network virtual-router vr2 protocol bgp install-rou
 set template cnv3bgp config  network virtual-router vr2 protocol rip enable no
 set template cnv3bgp config  network virtual-router vr2 protocol ospf enable no
 set template cnv3bgp config  network virtual-router vr2 protocol ospfv3 enable no
-set template cnv3bgp config  network virtual-router vr2 interface [ ethernet1/2 ethernet1/3 loopback.4 loopback.5 ]
-set template cnv3bgp config  network interface ethernet ethernet1/2 layer3 ndp-proxy enabled no
-set template cnv3bgp config  network interface ethernet ethernet1/2 layer3 sdwan-link-settings upstream-nat enable no
-set template cnv3bgp config  network interface ethernet ethernet1/2 layer3 sdwan-link-settings upstream-nat static-ip
-set template cnv3bgp config  network interface ethernet ethernet1/2 layer3 sdwan-link-settings enable no
-set template cnv3bgp config  network interface ethernet ethernet1/2 layer3 dhcp-client create-default-route no
-set template cnv3bgp config  network interface ethernet ethernet1/2 layer3 lldp enable no
-set template cnv3bgp config  network interface ethernet ethernet1/2 layer3 interface-management-profile ping
-set template cnv3bgp config  network interface ethernet ethernet1/3 layer3 ndp-proxy enabled no
-set template cnv3bgp config  network interface ethernet ethernet1/3 layer3 sdwan-link-settings upstream-nat enable no
-set template cnv3bgp config  network interface ethernet ethernet1/3 layer3 sdwan-link-settings upstream-nat static-ip
-set template cnv3bgp config  network interface ethernet ethernet1/3 layer3 sdwan-link-settings enable no
-set template cnv3bgp config  network interface ethernet ethernet1/3 layer3 dhcp-client create-default-route no
-set template cnv3bgp config  network interface ethernet ethernet1/3 layer3 lldp enable no
-set template cnv3bgp config  network interface ethernet ethernet1/3 layer3 interface-management-profile ping
-set template cnv3bgp config  network interface ethernet ethernet1/1 ha
-set template cnv3bgp config  network interface loopback units loopback.4 adjust-tcp-mss enable no
-set template cnv3bgp config  network interface loopback units loopback.4 ip 172.16.4.199
-set template cnv3bgp config  network interface loopback units loopback.4 interface-management-profile ping
-set template cnv3bgp config  network interface loopback units loopback.5 adjust-tcp-mss enable no
-set template cnv3bgp config  network interface loopback units loopback.5 ip 172.16.5.199
-set template cnv3bgp config  network interface loopback units loopback.5 interface-management-profile ping
-set template cnv3bgp config  network profiles interface-management-profile ping
 set template cnv3bgp config  deviceconfig high-availability interface ha1
 set template cnv3bgp config  deviceconfig high-availability interface ha1-backup
 set template cnv3bgp config  deviceconfig high-availability interface ha2
