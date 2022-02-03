@@ -171,6 +171,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+      {{- if .Values.common.pullSecretName }}
+      imagePullSecrets:
+      - name: {{ .Values.common.pullSecretName }}
+      {{ end }}
       volumes:
       {{- if .Values.dp.dpdk }}
       #Enable hugepages for DPDK
