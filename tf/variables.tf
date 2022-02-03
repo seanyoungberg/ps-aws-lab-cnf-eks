@@ -25,8 +25,9 @@ variable "safe_ips" {
     "54.241.37.235/32",     #prisma us west
     "83.242.74.253/32",     #amsterdam-gw
     "84.207.227.0/28",      #amsterdam-gw
-    "213.39.97.34/32",      #amsterdam-gp
     "84.207.230.24/29",     #amsterdam lab
+    "134.238.0.0/16",       #pan /16
+    "213.39.97.34/32",      #amsterdam-gp
   ]
   type = list
 }
