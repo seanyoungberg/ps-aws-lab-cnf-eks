@@ -48,6 +48,7 @@ terraform apply
 \! NOTE: the kubeconfig file above is not the default, make sure that from now on that's the cluster you will use. For example export KUBECONFIG variable
 
 # jump host preparation
+go to the main folder where you cloned the repo
 copy the the kernel module binaries to jump host, replace the name accordingly
 ```
 scp bin/igb_uio.ko bin/rte_kni.ko  aws-cnv3-jump:
@@ -59,10 +60,9 @@ ssh aws-cnv3-jump sudo mv igb_uio.ko rte_kni.ko /var/www/html/
 \! NOTE: that these modules are specific to the ami used for the nodes, hence if you use a different ami you will most likely need to recompile the modules
 
 # setup multus and scale the cluster
-download and apply multus
+apply multus
 ```
-curl -L -k kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/master/config/multus/v3.7.2-eksbuild.1/aws-k8s-multus.yaml -O
-kubectl apply -f aws-k8s-multus.yaml
+kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/master/config/multus/v3.7.2-eksbuild.1/aws-k8s-multus.yaml
 ```
 Autoscaling group will have 0 nodes now. Scale it up. Adjust the region and name as needed
 ```
@@ -73,8 +73,6 @@ aws autoscaling set-desired-capacity --region eu-central-1 --auto-scaling-group-
 Create device group and template stack that will be referenced later on. To bring up BGP peering with multus hosts deployed by TF you will need to create a template with the necessary VR/BGP/interface configuration. The cli commands creating these are in the *panorama_bgp_template.cli* file. Reference that template in the template stack.
 
 # Helm
-go to the main folder when you cloned the repo
-
 create the helm values file: eks-h.yaml, something like:
 ```
 ---
@@ -128,24 +126,29 @@ helm install mycn cnv3 --values eks-h.yaml
 # secondary IPs and routes
 you can create an alias or a convenient function in your shell environment like so:
 ```
-function awsinstancebyip  { aws ec2 describe-instances --region eu-central-1 --filter Name=private-ip-address,Values=$1 | jq '.Reservations[0].Instances[0] | {"id":.InstanceId, "ni": .NetworkInterfaces | [.[] | {"di":.Attachment.DeviceIndex,"ip":.PrivateIpAddress,"eni":.NetworkInterfaceId} ] | sort_by(.di)}'; }
+function awsinstbyip  { aws ec2 describe-instances --region eu-central-1 --filter Name=private-ip-address,Values=$1 | jq '.Reservations[0].Instances[0] | {"id":.InstanceId, "ni": .NetworkInterfaces | [.[] | {"di":.Attachment.DeviceIndex,"ip":.PrivateIpAddress,"eni":.NetworkInterfaceId} ] | sort_by(.di)}'; }
 ```
-Find the K8S hosting the DP pods
 
 ## secondary IPs for HA
-IP addresses on the ha2 link 172.16.3.101 and 172.16.3.102 are assigned to K8S nodes hosting the dp-0 and dp-1 accordingly (in this .172 and .247)
+Secondary IP addresses of the ha2 link 172.16.3.101 and 172.16.3.102 should be now assigned to K8S nodes hosting the dp-0 and dp-1 accordingly (in my case .172 and .247). First run and check on which hosts are the DP-0 and DP-1. 
 ```
+kubectl -n kube-system get pods
+```
+Adjust the IPs .172 and .247 in the commands below accordingly
+```
+dp0node=172.16.1.172
+dp1node=172.16.1.247
 aws ec2 assign-private-ip-addresses --region eu-central-1 --allow-reassignment \
     --private-ip-addresses 172.16.3.101 \
-    --network-interface-id $(awsinstbyip 172.16.1.172 | jq -r '.ni[1].eni')
+    --network-interface-id $(awsinstbyip $dp0node | jq -r '.ni[1].eni')
 
 aws ec2 assign-private-ip-addresses --region eu-central-1  --allow-reassignment \
     --private-ip-addresses 172.16.3.102 \
-    --network-interface-id $(awsinstbyip 172.16.1.247 | jq -r '.ni[1].eni')
+    --network-interface-id $(awsinstbyip $dp1node | jq -r '.ni[1].eni')
 ```
 
 ## secondary IPs for traffic
-Find the K8S node hosting the active DP pod, we will put it into *nip* variable to avoid putting it into too many places
+Find the K8S node hosting the active DP pod, we will save it into *nip* variable to avoid putting it into too many places
 ```
 nip=172.16.1.247
 aws ec2 assign-private-ip-addresses --region eu-central-1  --allow-reassignment \
