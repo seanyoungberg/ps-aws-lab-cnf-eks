@@ -1,6 +1,17 @@
 # Intro
 The lab demo is meant to show / help with sample setup, not necessarily the most correct one when it comes to the way BGP is configured or routes are propagated
 
+# Prerequisite
+working:
+* aws cli
+* helm
+* terraform
+In the instructions the aws hosts are referred to by their name in the ssh_config configuration file, like below. This helps to reuse the commands later on when you rebuild the lab and IPs chagne etc
+```
+Host aws-cnv3-jump
+  HostName 18.194.80.247
+```
+
 # AWS infrastructure
 clone the repo
 ```
@@ -17,14 +28,15 @@ download lambda function
 curl -L -k https://github.com/aws-samples/eks-install-guide-for-multus/raw/main/cfn/templates/nodegroup/lambda_function.zip -O
 ```
 
-create your value file: ../eks.tfvars, replace user with your user. Also if needed create/add your own **safe_ips**
+create your value file: ../eks.tfvars, replace user with your username when applicable. Also if needed create/add your own **safe_ips**
+key_pair might be named differently than your user account. Owner is used for resource tagging
 ```
-cluster_name = "user-cn3"
-vpc_name  = "user-cn3-n1"
+cluster_name = "<user>-cn3"
+vpc_name  = "<user>-cn3-n1"
 kubeconfig_output_path = "/Users/user/.kube/config-eks"
 region = "eu-central-1"
-key_pair = "user"
-owner = "user"
+key_pair = "<user>"
+owner = "<user>"
 ```
 
 init, plan and apply
