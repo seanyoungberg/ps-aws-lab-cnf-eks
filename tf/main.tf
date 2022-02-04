@@ -547,13 +547,14 @@ data "template_cloudinit_config" "m1_ci" {
               graceful restart on;
               neighbor 172.16.4.199 as 65430;
             }
-            protocol bgp friend {
+            protocol bgp m2 {
               import filter {
                     accept;
               };
               local as 65431;
               source address 172.17.4.200;
               graceful restart on;
+              multihop;
               neighbor 172.17.5.200 as 65432;
             }
         - path: /var/lib/cloud/scripts/per-once/bird.sh
@@ -569,6 +570,7 @@ data "template_cloudinit_config" "m1_ci" {
         - netplan apply
       packages:
         - bird
+        - fping
         - net-tools
       EOF
   }
@@ -657,13 +659,14 @@ data "template_cloudinit_config" "m2_ci" {
               graceful restart on;
               neighbor 172.16.5.199 as 65430;
             }
-            protocol bgp friend {
+            protocol bgp m1 {
               import filter {
                     accept;
               };
               local as 65432;
               source address 172.17.5.200;
               graceful restart on;
+              multihop;
               neighbor 172.17.4.200 as 65431;
             }
         - path: /var/lib/cloud/scripts/per-once/bird.sh
@@ -679,6 +682,7 @@ data "template_cloudinit_config" "m2_ci" {
         - netplan apply
       packages:
         - bird
+        - fping
         - net-tools
       EOF
   }
