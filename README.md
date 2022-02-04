@@ -28,7 +28,7 @@ download lambda function
 curl -L -k https://github.com/aws-samples/eks-install-guide-for-multus/raw/main/cfn/templates/nodegroup/lambda_function.zip -O
 ```
 
-create your value file: ../eks.tfvars, replace user with your username when applicable. Also if needed create/add your own **safe_ips**
+create your value file: terraform.tfvars, replace user with your username when applicable. Also if needed create/add your own **safe_ips**
 key_pair might be named differently than your user account. Owner is used for resource tagging
 ```
 cluster_name = "<user>-cn3"
@@ -42,8 +42,8 @@ owner = "<user>"
 init, plan and apply
 ```
 terraform init
-terraform plan --var-file=../eks.tfvars
-terraform apply
+terraform plan --out tp1
+terraform apply tp1
 ```
 \! NOTE: the kubeconfig file above is not the default, make sure that from now on that's the cluster you will use. For example export KUBECONFIG variable
 
