@@ -20,6 +20,7 @@ variable "region" {
 
 variable "safe_ips" {
   default = [
+    "8.47.64.2/32",         #hq
     "34.99.77.241/32",      #prisma nl central
     "34.99.77.242/32",      #prisma nl central
     "54.241.37.235/32",     #prisma us west
