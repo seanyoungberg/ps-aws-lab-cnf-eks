@@ -1,4 +1,6 @@
 # Intro
+For internal use only, do not distribute any part of this repository outside of PAN organisation.
+
 The lab demo is meant to show / help with sample setup, not necessarily the most correct one when it comes to the way BGP is configured or routes are propagated
 
 # Prerequisite
