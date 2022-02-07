@@ -499,6 +499,7 @@ data "template_cloudinit_config" "m1_ci" {
               ethernets:
                 lo:
                   addresses:
+                  - 172.17.4.100/32
                   - 172.17.4.200/32
                 ens5:
                   dhcp4: yes
@@ -509,7 +510,7 @@ data "template_cloudinit_config" "m1_ci" {
                   routes:
                   - to: 172.16.5.0/24
                     via: 172.16.4.199
-                  - to: 172.17.5.0/24
+                  - to: 172.17.5.0/25
                     via: 172.16.4.1
         - path: /etc/bird/bird.conf
           content: |
@@ -611,6 +612,7 @@ data "template_cloudinit_config" "m2_ci" {
               ethernets:
                 lo:
                   addresses:
+                  - 172.17.5.100/32
                   - 172.17.5.200/32
                 ens5:
                   dhcp4: yes
@@ -621,7 +623,7 @@ data "template_cloudinit_config" "m2_ci" {
                   routes:
                   - to: 172.16.4.0/24
                     via: 172.16.5.199
-                  - to: 172.17.4.0/24
+                  - to: 172.17.4.0/25
                     via: 172.16.5.1
         - path: /etc/bird/bird.conf
           content: |

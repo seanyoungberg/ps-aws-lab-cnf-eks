@@ -165,10 +165,10 @@ aws ec2 assign-private-ip-addresses --region eu-central-1  --allow-reassignment 
 Find the routing table associated with the multus subnets and add the routes. Note we're using *nip* variable from the previous step
 ```
 rt=rtb-0cd9f78f4a1a0b02b
-aws  ec2 create-route   --region eu-central-1 --destination-cidr-block 172.17.4.0/24 \
+aws  ec2 create-route   --region eu-central-1 --destination-cidr-block 172.17.4.0/25 \
     --route-table-id $rt \
     --network-interface-id $(awsinstbyip $nip | jq -r '.ni[3].eni')
-aws  ec2 create-route   --region eu-central-1 --destination-cidr-block 172.17.5.0/24 \
+aws  ec2 create-route   --region eu-central-1 --destination-cidr-block 172.17.5.0/25 \
     --route-table-id $rt \
     --network-interface-id $(awsinstbyip $nip | jq -r '.ni[2].eni')
 ```
