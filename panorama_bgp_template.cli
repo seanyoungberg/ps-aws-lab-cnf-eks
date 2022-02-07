@@ -107,6 +107,24 @@ set template cnv3bgp config  deviceconfig high-availability interface ha1-backup
 set template cnv3bgp config  deviceconfig high-availability interface ha2
 set template cnv3bgp config  deviceconfig high-availability interface ha2-backup
 set template cnv3bgp config  deviceconfig high-availability interface ha3
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m1 nexthop ip-address 172.16.4.200
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m1 bfd profile None
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m1 path-monitor enable no
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m1 path-monitor failure-condition any
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m1 path-monitor hold-time 2
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m1 interface ethernet1/2
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m1 metric 10
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m1 destination 172.17.4.0/25
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m1 route-table unicast
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m2 path-monitor enable no
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m2 path-monitor failure-condition any
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m2 path-monitor hold-time 2
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m2 nexthop ip-address 172.16.5.200
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m2 bfd profile None
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m2 interface ethernet1/3
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m2 metric 10
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m2 destination 172.17.5.0/25
+set template cnv3bgp config  network virtual-router vr2 routing-table ip static-route m2 route-table unicast
 set template cnv3bgp config  deviceconfig high-availability group group-id 5
 set template cnv3bgp config  deviceconfig high-availability group state-synchronization ha2-keep-alive enabled yes
 set template cnv3bgp config  deviceconfig high-availability enabled yes
