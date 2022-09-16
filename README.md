@@ -185,27 +185,6 @@ echo "complete -o default -F __start_kubectl k}" >> ~/.bashrc
 source ~/.bashrc
 ```
 
-## Deploy the EKS resources using Terraform
-
-31. Prepare CloudShell environment
-
-```
-cd ~/ps-aws-cn-series-lab/terraform/cnseries
-```
-
-```
-terraform init
-```
-
-```
-terraform apply
-```
-
-It will take sometime (**~10 mins**) to deploy all the lab components. Status will be updated on the cloudshell console as deployment progresses. 
-
-
-**If you get an error, run `terraform apply` again**
-
 # AWS infrastructure
 clone the repo
 ```
