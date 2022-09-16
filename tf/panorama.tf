@@ -1,6 +1,6 @@
 
 module "management-vpc" {
-  source          = "../modules/vpc"
+  source          = "./modules/vpc"
   vpc             = var.management-vpc
   prefix-name-tag = var.prefix-name-tag
   subnets         = var.management-vpc-subnets
@@ -42,7 +42,7 @@ locals {
 }
 
 module "vpc-routes" {
-  source          = "../modules/vpc_routes"
+  source          = "./modules/vpc_routes"
   vpc-routes      = var.management-vpc-routes
   vpcs            = local.vpcs
   prefix-name-tag = var.prefix-name-tag
