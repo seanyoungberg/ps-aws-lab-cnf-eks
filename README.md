@@ -239,12 +239,15 @@ Create device group and template stack that will be referenced later on. To brin
 
 Helm Install
 
-```
 delete helm 3.9
-sudo rm /usr/local/bin/helm
 
+```
+sudo rm /usr/local/bin/helm
+```
+
+```
 sudo yum install openssl
-wget https://get.helm.sh/helm-v3.9.0-linux-amd64.tar.gz
+wget hhttps://get.helm.sh/helm-v3.8.2-linux-amd64.tar.gz
 tar -zxvf helm-v3.8.2-linux-amd64.tar.gz
 mv linux-amd64/helm ~/bin/
 ```
