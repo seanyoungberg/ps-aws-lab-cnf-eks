@@ -19,7 +19,7 @@ resource "aws_network_interface" "private" {
 resource "aws_instance" "this" {
   ami                         = var.panorama.ami
   instance_type               = var.panorama.instance_type
-  key_name                    = "module.management-vpc.ssh_key_name"
+  key_name                    = var.key_pair
   network_interface {
     network_interface_id = aws_network_interface.private.id
     device_index = 0
