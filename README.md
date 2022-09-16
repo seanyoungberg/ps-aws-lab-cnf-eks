@@ -150,19 +150,7 @@ It takes around a minute for cloudshell to launch and to get the prompt as shown
 rm -rf ~/*
 ```
 
-28. We will then start by cloning the following github repository:
-
-```
-git clone https://github.com/seanyoungberg/ps-aws-cn-series-lab.git
-```
-
-29.  Change current directory to git repositories’ root directory:
-
-```
-cd ps-aws-cn-series-lab
-```
-
-30. Prepare CloudShell environment
+1.  Prepare CloudShell environment
 
 Script will install Terraform, kubectl, and aws-iam-authenticator
 
@@ -189,6 +177,26 @@ source ~/.bashrc
 clone the repo
 ```
 git clone https://github.com/seanyoungberg/ps-aws-lab-cnf-eks.git
+
+```
+
+```
+./setup.sh
+```
+
+- Quality of life tweaks for working with `kubectl`
+
+```
+sudo yum install -y bash-completion
+```
+
+```
+source <(kubectl completion bash) # setup autocomplete in bash into the current shell, bash-completion package should be installed first.
+
+echo "source <(kubectl completion bash)" >> ~/.bashrc # add autocomplete permanently to your bash shell.
+echo "alias k=kubectl" >> ~/.bashrc
+echo "complete -o default -F __start_kubectl k}" >> ~/.bashrc
+source ~/.bashrc
 ```
 
 goto terraform folder
