@@ -8,6 +8,8 @@ data "aws_eks_cluster_auth" "cluster" {
   name = module.eks.cluster_id
 }
 
+resource "random_pet" "prefix" {}
+
 data "aws_ami" "eks" {
   most_recent      = true
   owners           = ["amazon"]
@@ -248,7 +250,7 @@ resource "aws_autoscaling_group" "ng1" {
 }
 
 resource "aws_s3_bucket" "lambda_bucket" {
-  bucket = "${var.cluster_name}-bucket"
+  bucket = "${random_pet.prefix.id}-bucket"
   acl    = "private"
 }
 
