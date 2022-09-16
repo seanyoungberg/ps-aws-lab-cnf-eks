@@ -162,7 +162,7 @@ git clone https://github.com/seanyoungberg/ps-aws-lab-cnf-eks.git
 Script will install Terraform, kubectl, and aws-iam-authenticator
 
 ```
-~/ps-aws-lab-cnf-eks/setup.sh
+sh ~/ps-aws-lab-cnf-eks/setup.sh
 ```
 
 - Quality of life tweaks for working with `kubectl`
@@ -236,6 +236,16 @@ aws autoscaling set-desired-capacity --region eu-central-1 --auto-scaling-group-
 Create device group and template stack that will be referenced later on. To bring up BGP peering with multus hosts deployed by TF you will need to create a template with the necessary VR/BGP/interface configuration. The cli commands creating these are in the *panorama_bgp_template.cli* file. Reference that template in the template stack.
 
 # Helm
+
+Helm Install
+
+```
+sudo yum install openssl
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
+```
+
 create the helm values file: eks-h.yaml, something like:
 ```
 ---
@@ -272,12 +282,12 @@ kubectl apply -f cnv3/crds/pan-cn-mgmt-slot-crd.yaml
 kubectl apply -f cnv3/crds/plugin-serviceaccount.yaml
 ```
 
-create pull secret for gcr registry, you need the sa json file file
+create pull secret for gcr registry, you need the sa json file. Add a password of your choise
 ```
 kubectl -n kube-system create secret docker-registry gcr-json-key \
                 --docker-server=gcr.io \
                 --docker-username=_json_key \
-                --docker-password="$(cat gcp-gcs-tse-openshiftsvc-a2c14ef0f49f.json)" \
+                --docker-password="" \
                 --docker-email=doesnotexist@doesnotexist.com.or.eu
 ```
 
