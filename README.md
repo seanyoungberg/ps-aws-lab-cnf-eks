@@ -119,18 +119,9 @@ Make sure to delete the whole line.
 
 In this section, we will deploy the AWS Cloud resources required for the purpose of this lab using Terraform. 
 
-21. Click on ‘AWS’ on the top left hand corner to navigate to the primary console.
-22. Make sure that the region is N.Virginia.
-
-![](https://lh5.googleusercontent.com/wvbD9GAzrkzYYlrz2yh68A-bQTgY7hRvtJ9Mjk5UCk4MTJfu4jn7MEjVJ_fpFVOtk8VQsZNEY9-1Ke0xcU-wOOiZeEI7uYq9_HpB9jSMKxFOc_kcD-yMfqMZ_FCjhFhj3NCWJILT-eLJYClWlw)
-
-23. Subscribe to Panorama.
-    - Click on the link below and the page that opens up, Click on “Continue to Subscribe” and then Click on “Accept Terms”.
-
-<https://aws.amazon.com/marketplace/pp?sku=eclz7j04vu9lf8ont8ta3n17o>
-
-![](https://lh3.googleusercontent.com/NakhvcKUlhnLlCvSGQyuyP9yFv5NNkBK9i5zuAeB2xHhrDMezl6PolPqFmrmcQTFRXkvsFc7CsqDfE5TrnFug4U9YUVLaMgVYDZLIaQ389W8eBVsEqaNM5gX1KTjUr4boUZyB1ME9yzoRiR3DQ)
-![](https://lh6.googleusercontent.com/pDi8o8qtSGly7Y3UV7cX2kIHiHmzxyFg_hzmAxRmLPn5BCow1UMSmE1fVr7K8wOU-rgspAnVxn4t2NdhcUm7xhbmVBTXNmsQzzwPltpzT0QBvAwfX5UzAOOS6xM_P41PdZSQejXdFxHgY_mJLQ)
+21. Navigate to the [Marketplace Console](https://us-east-1.console.aws.amazon.com/marketplace/home?region=us-west-2#/)
+22. Check if Panorama is already subscribed
+23. If not, go to Discover Products and search for Panorama and subscribe
 
 24. Wait till Effective date changes from ‘Pending’ to today’s date. This will take a few minutes.
 
