@@ -223,11 +223,12 @@ terraform apply
 go to the main folder where you cloned the repo
 copy the the kernel module binaries to jump host, replace the name accordingly
 ```
-scp -i ${QWIKLABS-key.pem} bin/igb_uio.ko bin/rte_kni.ko ${aws-cnv3-jump-public-ip}:
+scp -i ${QWIKLABS-key.pem} bin/igb_uio.ko bin/rte_kni.ko ubuntu@${aws-cnv3-jump-public-ip}:
 ```
 ssh to jump host and move the files to nginx web folder
 ```
-ssh aws-cnv3-jump sudo mv igb_uio.ko rte_kni.ko /var/www/html/
+ssh ${aws-cnv3-jump-public-ip}
+sudo mv igb_uio.ko rte_kni.ko /var/www/html/
 ```
 \! NOTE: that these modules are specific to the ami used for the nodes, hence if you use a different ami you will most likely need to recompile the modules
 
