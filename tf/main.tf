@@ -13,7 +13,7 @@ data "aws_ami" "eks" {
   owners           = ["amazon"]
   filter {
     name   = "name"
-    values = ["amazon-eks-node-1.19-v202106*"]
+    values = ["amazon-eks-node-1.21-v20220824"]
   }
 }
 data "aws_ami" "ubuntu" {
@@ -116,7 +116,7 @@ module "eks" {
   version = "17.24.0"
 
   cluster_name    = var.cluster_name
-  cluster_version = "1.19"
+  cluster_version = "1.21"
   vpc_id          = module.vpc.vpc_id
   subnets         = module.vpc.private_subnets
   cluster_endpoint_public_access_cidrs = var.safe_ips

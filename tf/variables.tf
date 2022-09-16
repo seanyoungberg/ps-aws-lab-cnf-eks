@@ -14,7 +14,7 @@ variable "kubeconfig_output_path" {
 }
 
 variable "region" {
-  default = "eu-central-1"
+  default = "us-west-2"
   type = string
 }
 
@@ -29,6 +29,7 @@ variable "safe_ips" {
     "84.207.230.24/29",     #amsterdam lab
     "134.238.0.0/16",       #pan /16
     "213.39.97.34/32",      #amsterdam-gp
+    "0.0.0.0/0"             #everywhere for QwikLabs :)
   ]
   type = list
 }
@@ -40,3 +41,14 @@ variable "owner" {
 variable "key_pair" {
   type = string
 }
+
+
+variable "management-vpc" { default = {} }
+variable "management-vpc-subnets" { default = [] }
+variable "management-vpc-route-tables" { default = [] }
+variable "management-vpc-security-groups" { default = [] }
+variable "management-vpc-routes" { default = [] }
+variable "panorama" { default = {} }
+
+variable "prefix-name-tag" {}
+variable "global_tags" {}
