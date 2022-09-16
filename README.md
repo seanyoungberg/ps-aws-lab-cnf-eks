@@ -247,7 +247,7 @@ sudo rm /usr/local/bin/helm
 
 ```
 sudo yum install openssl
-wget hhttps://get.helm.sh/helm-v3.8.2-linux-amd64.tar.gz
+wget https://get.helm.sh/helm-v3.8.2-linux-amd64.tar.gz
 tar -zxvf helm-v3.8.2-linux-amd64.tar.gz
 mv linux-amd64/helm ~/bin/
 ```
@@ -286,6 +286,7 @@ dp:
   - name: net1
     pciBusID: "0000:00:07.0"
   - name: net2
+    pciBusID: "0000:00:08.0"
 ```
 
 apply crds
