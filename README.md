@@ -193,7 +193,7 @@ git clone https://github.com/seanyoungberg/ps-aws-lab-cnf-eks.git
 
 goto terraform folder
 ```
-cd cnv3/tf
+cd ps-aws-lab-cnf-eks/tf
 ```
 
 download lambda function
@@ -216,16 +216,14 @@ key_pair = "<user>"
 init, plan and apply
 ```
 terraform init
-terraform plan --out tp1
-terraform apply tp1
+terraform apply
 ```
-\! NOTE: the kubeconfig file above is not the default, make sure that from now on that's the cluster you will use. For example export KUBECONFIG variable
 
 # jump host preparation
 go to the main folder where you cloned the repo
 copy the the kernel module binaries to jump host, replace the name accordingly
 ```
-scp bin/igb_uio.ko bin/rte_kni.ko  aws-cnv3-jump:
+scp -i ${QWIKLABS-key.pem} bin/igb_uio.ko bin/rte_kni.ko ${aws-cnv3-jump-public-ip}:
 ```
 ssh to jump host and move the files to nginx web folder
 ```
