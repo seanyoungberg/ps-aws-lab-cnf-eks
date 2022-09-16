@@ -240,24 +240,34 @@ Create device group and template stack that will be referenced later on. To brin
 Helm Install
 
 ```
+delete helm 3.9
+sudo rm /usr/local/bin/helm
+
 sudo yum install openssl
-curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-chmod 700 get_helm.sh
-./get_helm.sh
+wget https://get.helm.sh/helm-v3.9.0-linux-amd64.tar.gz
+tar -zxvf helm-v3.8.2-linux-amd64.tar.gz
+mv linux-amd64/helm ~/bin/
 ```
 
-create the helm values file: eks-h.yaml, something like:
+Verify you are ising 3.8.2
+
+```
+helm version
+```
+
+create the helm values file: ~/ps-aws-lab-cnf-eks/eks-h.yaml, something like:
 ```
 ---
 common:
-  cr: "gcr.io/gcp-gcs-tse/cn-series"
-  versionPanos: "10.2.0-c395"
-  versionInit: "3.0.0-b3"
-  pullSecretName: gcr-json-key
+  cr: "us.gcr.io/panw-gcp-team-testing/paloaltonetworks/panos_cn_ngfw"
+  versionPanos: "10.2.2"
+  versionInit: "3.0.2"
+  #pullSecretName: gcr-json-key
+
 
 panorama:
-  authKey: "xyz"
-  ip: "my-panorama"
+  authKey: "<add here>"
+  ip: "<add here>"
   dg: dg_k8s_cnv3
   ts: ts_k8s_cnv3
 
@@ -268,12 +278,11 @@ dp:
   - name: ha2
     pciBusID: "0000:00:06.0"
     ip:
-      fw0: "172.16.3.101/32"
-      fw1: "172.16.3.102/32"
+      fw0: "<add here>"
+      fw1: "<add here>"
   - name: net1
     pciBusID: "0000:00:07.0"
   - name: net2
-    pciBusID: "0000:00:08.0"
 ```
 
 apply crds
@@ -282,24 +291,15 @@ kubectl apply -f cnv3/crds/pan-cn-mgmt-slot-crd.yaml
 kubectl apply -f cnv3/crds/plugin-serviceaccount.yaml
 ```
 
-create pull secret for gcr registry, you need the sa json file. Add a password of your choise
 ```
-kubectl -n kube-system create secret docker-registry gcr-json-key \
-                --docker-server=gcr.io \
-                --docker-username=_json_key \
-                --docker-password="" \
-                --docker-email=doesnotexist@doesnotexist.com.or.eu
-```
-
-install replace **mycn** with something else if you so desire
-```
+cd ~/ps-aws-lab-cnf-eks
 helm install mycn cnv3 --values eks-h.yaml
 ```
 
 # secondary IPs and routes
 you can create an alias or a convenient function in your shell environment like so:
 ```
-function awsinstbyip  { aws ec2 describe-instances --region eu-central-1 --filter Name=private-ip-address,Values=$1 | jq '.Reservations[0].Instances[0] | {"id":.InstanceId, "ni": .NetworkInterfaces | [.[] | {"di":.Attachment.DeviceIndex,"ip":.PrivateIpAddress,"eni":.NetworkInterfaceId} ] | sort_by(.di)}'; }
+function awsinstbyip  { aws ec2 describe-instances --region us-west-2 --filter Name=private-ip-address,Values=$1 | jq '.Reservations[0].Instances[0] | {"id":.InstanceId, "ni": .NetworkInterfaces | [.[] | {"di":.Attachment.DeviceIndex,"ip":.PrivateIpAddress,"eni":.NetworkInterfaceId} ] | sort_by(.di)}'; }
 ```
 
 ## secondary IPs for HA
