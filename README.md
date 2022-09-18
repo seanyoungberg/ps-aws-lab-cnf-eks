@@ -2,17 +2,7 @@
 
 The lab demo is meant to show / help with sample setup, not necessarily the most correct one when it comes to the way BGP is configured or routes are propagated
 
-# Prerequisite
-working:
-* aws cli
-* helm
-* terraform
-In the instructions the aws hosts are referred to by their name in the ssh_config configuration file, like below. This helps to reuse the commands later on when you rebuild the lab and IPs chagne etc
-```
-Host aws-cnv3-jump
-  HostName 18.194.80.247
-```
-
+![Lab Topology](https://user-images.githubusercontent.com/43679669/190932186-dce3cc02-6031-47ca-affc-ee9d7d4f740f.png)
 
 # Application Environment Overview
 
@@ -404,7 +394,9 @@ kubectl -n kube-system exec -it pan-mp-mycn-sts-0-0 -- su admin
 kubectl -n kube-system exec -it pan-mp-mycn-sts-1-0 -- su admin
 ```
 
-`admin@pan-mp-mycn-sts-0-0.pan-mp-mycn(active)>`
+In this case pod `pan-mp-mycn-sts-0-0` is active but it could be either.
+
+![Screenshot 2022-09-18 160614](https://user-images.githubusercontent.com/43679669/190932266-b0197761-6666-46e2-9fdd-35fe20d31508.png)
 
 2. Doublecheck what node the active HA pod is running on
 
@@ -412,11 +404,15 @@ kubectl -n kube-system exec -it pan-mp-mycn-sts-1-0 -- su admin
 kubectl get pods -n kube-system -l=app=pan-mgmt -o wide
 ```
 
+![Screenshot 2022-09-18 161031](https://user-images.githubusercontent.com/43679669/190932247-b751da2b-e660-4c4c-866c-1bfe8135da91.png)
+
 3. Get the IP address of the corresponding node hosting the currently active pod.
 
 ```
 kubectl get nodes -o wide
 ```
+
+![Screenshot 2022-09-18 161131](https://user-images.githubusercontent.com/43679669/190932230-72b134c3-a004-472d-98c8-6be2c3efe1d9.png)
 
 4. Set the node IP variable which will be passed into the function to identify the appropriate ENI to add the secondary IP addresses to for eth1/2 and eth1/3 dataplane interfaces.
 
@@ -468,6 +464,8 @@ BGP Peering configuration was prepped for the CNs to the "multus" ubuntu VMs dep
 ```
 show routing protocol bgp summary
 ```
+
+![Screenshot 2022-09-18 162827](https://user-images.githubusercontent.com/43679669/190932221-7af54c64-f7fb-4f8f-a4e5-3cf3e7d34435.png)
 
 ## Test Failover
 
