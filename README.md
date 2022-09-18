@@ -281,8 +281,8 @@ dp:
   - name: ha2
     pciBusID: "0000:00:06.0"
     ip:
-      fw0: "<add here>"
-      fw1: "<add here>"
+      fw0: "172.16.3.100"
+      fw1: "172.16.3.101"
   - name: net1
     pciBusID: "0000:00:07.0"
   - name: net2
@@ -300,38 +300,72 @@ cd ~/ps-aws-lab-cnf-eks
 helm install mycn cnv3 --values eks-h.yaml
 ```
 
-# secondary IPs and routes
-you can create an alias or a convenient function in your shell environment like so:
+# Secondary IPs
+
+
 ```
 function awsinstbyip  { aws ec2 describe-instances --region us-west-2 --filter Name=private-ip-address,Values=$1 | jq '.Reservations[0].Instances[0] | {"id":.InstanceId, "ni": .NetworkInterfaces | [.[] | {"di":.Attachment.DeviceIndex,"ip":.PrivateIpAddress,"eni":.NetworkInterfaceId} ] | sort_by(.di)}'; }
 ```
 
-## secondary IPs for HA
-Secondary IP addresses of the ha2 link 172.16.3.101 and 172.16.3.102 should be now assigned to K8S nodes hosting the dp-0 and dp-1 accordingly (in my case .172 and .247). First run and check on which hosts are the DP-0 and DP-1. 
+## HA2 Interfaces
+
+We specified static IPs for the HA2 interfaces in the helm chart. Now we must make those same addresses available on the AWS ENI that is mapped to the corresponding HA2 pod interface. The ENIs of the nodes were created with dynamic IP addresses and we do not know which K8S node will be used to schedule the dp-0 and dp-1 pods. We will handle this by identifying which node each is running on and then add a secondary IP address to the ENIs to match the static mapping that was defined in the helm chart.
+
+The interface attachment index order is very important to identify which ENI is being assigned to the corresponding DP pod. Unfortunately, the new EC2 console does not show the interface index order when viewing the instance. You can use this AWS CLI query to get a view of the interface order for the EKS nodes used for this deployment.
+
 ```
-kubectl -n kube-system get pods
+aws ec2 describe-instances --filters "Name=tag:aws:autoscaling:groupName,Values=lab-k8s-cn-v3-ng1" --query 'Reservations[].Instances[].{InstanceId: InstanceId, NetworkInterfaces: NetworkInterfaces[].{Id: NetworkInterfaceId, DeviceIndex: Attachment.DeviceIndex, PrimaryIp: PrivateIpAddress}}' --output table
 ```
-Adjust the IPs .172 and .247 in the commands below accordingly
+
+
+## Set secondary IP for HA2 Interface
+
 ```
-dp0node=172.16.1.172
-dp1node=172.16.1.247
-aws ec2 assign-private-ip-addresses --region eu-central-1 --allow-reassignment \
-    --private-ip-addresses 172.16.3.101 \
+dp0node=172.16.1.xxx
+dp1node=172.16.1.xxx
+aws ec2 assign-private-ip-addresses --region us-west-2 --allow-reassignment \
+    --private-ip-addresses 172.16.3.100 \
     --network-interface-id $(awsinstbyip $dp0node | jq -r '.ni[1].eni')
 
-aws ec2 assign-private-ip-addresses --region eu-central-1  --allow-reassignment \
-    --private-ip-addresses 172.16.3.102 \
+aws ec2 assign-private-ip-addresses --region us-west-2  --allow-reassignment \
+    --private-ip-addresses 172.16.3.101 \
     --network-interface-id $(awsinstbyip $dp1node | jq -r '.ni[1].eni')
 ```
 
 ## secondary IPs for traffic
-Find the K8S node hosting the active DP pod, we will save it into *nip* variable to avoid putting it into too many places
+Find the K8S node hosting the active DP pod, we will save it into *nip* variable to avoid putting it into too many places.
+
+These dataplane secondary IPs should be associated to the node that is hosting the *active* HA member. 
+
+- Start a PAN-OS shell to the management pods to verify which one is active.
+
 ```
-nip=172.16.1.247
-aws ec2 assign-private-ip-addresses --region eu-central-1  --allow-reassignment \
+kubectl -n kube-system exec -it pan-mp-mycn-sts-0-0 -- su admin
+kubectl -n kube-system exec -it pan-mp-mycn-sts-1-0 -- su admin
+```
+
+`admin@pan-mp-mycn-sts-0-0.pan-mp-mycn(active)>`
+
+- Doublecheck what node the active HA pod is running on
+
+```
+kubectl get pods -n kube-system -l=app=pan-mgmt -o wide
+```
+
+- Get the IP address of the corresponding node hosting the currently active pod.
+
+```
+kubectl get nodes -o wide
+```
+
+- Set the node IP variable which will be passed into the function to identify the appropriate ENI to add the secondary IP addresses to for eth1/2 and eth1/3 dataplane interfaces.
+
+```
+nip=172.16.1.xxx
+aws ec2 assign-private-ip-addresses --region us-west-2  --allow-reassignment \
     --private-ip-addresses 172.16.4.199 \
     --network-interface-id $(awsinstbyip $nip | jq -r '.ni[2].eni')
-aws ec2 assign-private-ip-addresses --region eu-central-1  --allow-reassignment \
+aws ec2 assign-private-ip-addresses --region us-west-2  --allow-reassignment \
     --private-ip-addresses 172.16.5.199 \
     --network-interface-id $(awsinstbyip $nip | jq -r '.ni[3].eni')
 ```
@@ -339,26 +373,93 @@ aws ec2 assign-private-ip-addresses --region eu-central-1  --allow-reassignment 
 ## routes for traffic
 Find the routing table associated with the multus subnets and add the routes. Note we're using *nip* variable from the previous step
 ```
-rt=rtb-0cd9f78f4a1a0b02b
-aws  ec2 create-route   --region eu-central-1 --destination-cidr-block 172.17.4.0/25 \
+rt=rtb-xxxxxxxxxx
+aws  ec2 create-route   --region us-west-2 --destination-cidr-block 172.17.4.0/25 \
     --route-table-id $rt \
     --network-interface-id $(awsinstbyip $nip | jq -r '.ni[3].eni')
-aws  ec2 create-route   --region eu-central-1 --destination-cidr-block 172.17.5.0/25 \
+aws  ec2 create-route   --region us-west-2 --destination-cidr-block 172.17.5.0/25 \
     --route-table-id $rt \
     --network-interface-id $(awsinstbyip $nip | jq -r '.ni[2].eni')
 ```
 
-# extras
-## bug in 10.2.0-c367
-\! NOTE: this should not be needed, as of panos c395
-in the panos 10.2.0-c367 there is a [bug PAN-187106](https://jira-hq.paloaltonetworks.local/browse/PAN-187106) which results in failed panorama pushed commit. To workaround it exec into both mps
-```
-kubectl exec -it cnv3fw1-sts-0-0 -- bash
-kubectl exec -it cnv3fw1-sts-1-0 -- bash
-```
-and run
-```
-telemcfg_gen
-```
-repush
+## Verify Routing
 
+Now that the secondary IPs and routes are in place, traffic can be directed to the CNF using traditional AWS designs.
+
+- BGP Peering to the secondary IP of the dataplane interfaces
+- Route traffic from AWS VPCs directly to the the ENI of the dataplane interfaces
+
+BGP Peering configuration was prepped for the CNs to the "multus" ubuntu VMs deployed in the VPC.
+
+- Validate BGP Peers are up on the active node
+
+```
+show routing protocol bgp summary
+```
+
+## Test Failover
+
+During failover, three things are triggered in AWS to move IP addresses and routes to the EC2 Instance / EKS Node that is hosting the now-active CN.
+
+1. Move any secondary IPs on the dataplane ENIs to the corresponding ENIs of the other instance
+2. Reassociate any elastic IPs that are associated to the secondary dataplane IPs
+3. Update any routes in VPC route tables poitned to a dataplane ENI
+
+
+
+
+
+## Extra
+
+kubectl -n kube-system logs pan-dp-mycn-dep-0-5854468848-5kxkj
+
+kubectl exec -it pan-mp-mycn-sts-0-0 -- su admin
+kubectl exec -it pan-mp-mycn-sts-1-0 -- su admin
+
+k get pods -n kube-system -l=app=pan-ngfw -o wide
+
+
+
+
+Identify the node name for the fw-0 deployment.
+
+```
+fw0node=$(kubectl -n kube-system get pod pan-mp-mycn-sts-0-0 --template '{{.spec.nodeName}}')
+
+echo $fw0node
+```
+
+Identify the ENI ID for the eth1 (Device Index = 1) interface for the instance. 
+
+```
+fw0eni=$(aws ec2 describe-instances --filters Name=private-dns-name,Values=$fw0node --query 'Reservations[].Instances[0].NetworkInterfaces[?Attachment.DeviceIndex == `1`].NetworkInterfaceId | [0]' --output text)
+
+echo $fw0eni
+```
+
+Assign HA2 IP address 172.16.3.100 for the fw-0 deployment to the ENI
+
+```
+aws ec2 assign-private-ip-addresses --region us-west-2 --allow-reassignment \
+    --private-ip-addresses 172.16.3.100 \
+    --network-interface-id $fw0eni
+```
+
+- Repeat these steps to assign IP address 172.16.3.101 for fw-1 on the other node.
+
+
+```
+fw1node=$(kubectl -n kube-system get pod pan-mp-mycn-sts-1-0 --template '{{.spec.nodeName}}')
+
+fw1eni=$(aws ec2 describe-instances --filters Name=private-dns-name,Values=$fw1node --query 'Reservations[].Instances[0].NetworkInterfaces[?Attachment.DeviceIndex == `1`].NetworkInterfaceId | [0]' --output text)
+
+aws ec2 assign-private-ip-addresses --region us-west-2 --allow-reassignment \
+    --private-ip-addresses 172.16.3.101 \
+    --network-interface-id $fw1eni
+```
+
+
+aws ec2 describe-instances --filters "Name=tag:aws:autoscaling:groupName,Values=lab-k8s-cn-v3-ng1" --query 'Reservations[].Instances[].{InstanceId: InstanceId, InterfaceId: NetworkInterfaces[?Attachment.DeviceIndex == `1`].NetworkInterfaceId}'
+
+
+{Id: NetworkInterfaceId, DeviceIndex: Attachment.DeviceIndex, PrimaryIp: PrivateIpAddress, AllIps: PrivateIpAddresses[].PrivateIpAddress}}' --output table
